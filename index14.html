@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlumniNetwork - Alumni Management Platform</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#0EA5E9', // Primary Blue
+              light: '#E0F2FE',   // Light Blue Background/Accents
+              dark: '#0284C7',    // Darker Blue hover state
+              deep: '#0369A1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- FontAwesome CDN for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      scroll-behavior: smooth;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #0EA5E9;
+      border-radius: 4px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col">
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="sticky top-0 z-40 bg-white dark:bg-slate-800 shadow-md border-b border-sky-100 dark:border-slate-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        
+        <!-- Brand Logo -->
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-sky-300 flex items-center justify-center text-white shadow-md shadow-sky-200 dark:shadow-none">
+            <i class="fa-solid fa-graduation-cap text-xl"></i>
+          </div>
+          <span class="font-bold text-xl tracking-tight text-slate-800 dark:text-white">Alumni<span class="text-brand">Network</span></span>
+        </div>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex space-x-1 lg:space-x-2">
+          <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors text-brand bg-brand-light dark:bg-slate-700">
+            <i class="fa-solid fa-house mr-1.5"></i>Home
+          </button>
+          <button onclick="switchTab('directory')" id="nav-directory" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-brand dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-users mr-1.5"></i>Directory
+          </button>
+          <button onclick="switchTab('events')" id="nav-events" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-brand dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-calendar-days mr-1.5"></i>Events
+          </button>
+          <button onclick="switchTab('jobs')" id="nav-jobs" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-brand dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-briefcase mr-1.5"></i>Jobs
+          </button>
+          <button onclick="switchTab('mentorship')" id="nav-mentorship" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-brand dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-user-graduate mr-1.5"></i>Mentorship
+          </button>
+          <button onclick="switchTab('fundraising')" id="nav-fundraising" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-brand dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-hand-holding-heart mr-1.5"></i>Fundraising
+          </button>
+          <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-brand dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-user-gear mr-1.5"></i>Profile
+          </button>
+          <button onclick="switchTab('admin')" id="nav-admin" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-brand dark:hover:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-shield-halved mr-1.5"></i>Admin
+          </button>
+        </nav>
+
+        <!-- Right Side Controls (Dark Mode Toggle & Login/Logout) -->
+        <div class="flex items-center space-x-3">
+          <!-- Dark Mode Toggle Button -->
+          <button id="theme-toggle" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-brand focus:outline-none transition-colors" title="Toggle Theme">
+            <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
+          </button>
+
+          <!-- Auth CTA Button -->
+          <div id="auth-buttons">
+            <button onclick="switchTab('login')" id="nav-login" class="px-4 py-2 rounded-xl bg-brand hover:bg-brand-dark text-white font-medium text-sm transition-all shadow-md shadow-sky-200 dark:shadow-none">
+              <i class="fa-solid fa-right-to-bracket mr-1.5"></i>Login / Join
+            </button>
+          </div>
+
+          <!-- Mobile Hamburger Toggle -->
+          <div class="md:hidden flex items-center">
+            <button id="mobile-menu-btn" class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">
+              <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 pt-2 pb-4 space-y-1">
+      <button onclick="switchTab('home')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-sky-50 dark:hover:bg-slate-700"><i class="fa-solid fa-house w-6"></i> Home</button>
+      <button onclick="switchTab('directory')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-sky-50 dark:hover:bg-slate-700"><i class="fa-solid fa-users w-6"></i> Directory</button>
+      <button onclick="switchTab('events')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-sky-50 dark:hover:bg-slate-700"><i class="fa-solid fa-calendar-days w-6"></i> Events</button>
+      <button onclick="switchTab('jobs')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-sky-50 dark:hover:bg-slate-700"><i class="fa-solid fa-briefcase w-6"></i> Jobs</button>
+      <button onclick="switchTab('mentorship')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-sky-50 dark:hover:bg-slate-700"><i class="fa-solid fa-user-graduate w-6"></i> Mentorship</button>
+      <button onclick="switchTab('fundraising')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-sky-50 dark:hover:bg-slate-700"><i class="fa-solid fa-hand-holding-heart w-6"></i> Fundraising</button>
+      <button onclick="switchTab('profile')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-sky-50 dark:hover:bg-slate-700"><i class="fa-solid fa-user-gear w-6"></i> Profile</button>
+      <button onclick="switchTab('admin')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-sky-50 dark:hover:bg-slate-700"><i class="fa-solid fa-shield-halved w-6"></i> Admin</button>
+    </div>
+  </header>
+
+  <!-- Notification Toast Box -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 pointer-events-none">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600 text-xl"></i>
+    <span id="toast-msg" class="font-medium text-sm">Action completed successfully!</span>
+  </div>
+
+  <!-- MAIN CONTAINER WITH TABS -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- 1. HOME / LANDING MODULE -->
+    <section id="tab-home" class="tab-content active space-y-12">
+      <!-- Hero Section -->
+      <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-sky-600 to-sky-400 text-white p-8 sm:p-12 lg:p-16 shadow-xl">
+        <div class="relative z-10 max-w-2xl space-y-6">
+          <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold tracking-wide uppercase">Official Alumni Portal</span>
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">Empowering Connections, Inspiring Future Leaders.</h1>
+          <p class="text-sky-100 text-base sm:text-lg leading-relaxed">
+            Reconnect with fellow graduates, explore exciting career opportunities, mentor current students, and give back to your alma mater community.
+          </p>
+          <div class="flex flex-wrap gap-4 pt-2">
+            <button onclick="switchTab('directory')" class="px-6 py-3 rounded-xl bg-white text-brand hover:bg-sky-50 font-bold shadow-lg transition-all transform hover:-translate-y-0.5">
+              Explore Directory
+            </button>
+            <button onclick="switchTab('events')" class="px-6 py-3 rounded-xl bg-sky-700/50 hover:bg-sky-700 text-white font-semibold backdrop-blur-sm border border-white/30 transition-all">
+              View Upcoming Events
+            </button>
+          </div>
+        </div>
+        <!-- Decorative Background Pattern -->
+        <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none hidden lg:block">
+          <i class="fa-solid fa-graduation-cap text-[320px]"></i>
+        </div>
+      </div>
+
+      <!-- Quick Stats Counter -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 text-center">
+          <div class="text-3xl font-extrabold text-brand mb-1" id="stat-alumni-count">1,250+</div>
+          <div class="text-sm font-medium text-slate-500 dark:text-slate-400">Registered Alumni</div>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 text-center">
+          <div class="text-3xl font-extrabold text-brand mb-1" id="stat-events-count">48</div>
+          <div class="text-sm font-medium text-slate-500 dark:text-slate-400">Events Hosted</div>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 text-center">
+          <div class="text-3xl font-extrabold text-brand mb-1" id="stat-jobs-count">120+</div>
+          <div class="text-sm font-medium text-slate-500 dark:text-slate-400">Jobs Posted</div>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 text-center">
+          <div class="text-3xl font-extrabold text-brand mb-1" id="stat-raised-count">₹45,000+</div>
+          <div class="text-sm font-medium text-slate-500 dark:text-slate-400">Funds Raised</div>
+        </div>
+      </div>
+
+      <!-- Featured Alumni Highlights -->
+      <div class="space-y-6">
+        <div class="flex justify-between items-end">
+          <div>
+            <h2 class="text-2xl font-bold tracking-tight">Featured Alumni</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Celebrating exceptional achievements in our community.</p>
+          </div>
+          <button onclick="switchTab('directory')" class="text-brand font-semibold text-sm hover:underline">View All <i class="fa-solid fa-arrow-right text-xs"></i></button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="home-featured-alumni">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Latest News & Announcements + Success Stories -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+        <!-- News & Announcements -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-4 flex flex-col justify-between">
+          <div class="flex items-center space-x-2 text-brand">
+            <i class="fa-solid fa-bullhorn text-lg"></i>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white">News & Announcements</h3>
+          </div>
+          <div class="space-y-4 divide-y divide-slate-100 dark:divide-slate-700">
+            <div class="pt-3 first:pt-0">
+              <span class="text-xs text-brand font-medium">Oct 24, 2026</span>
+              <h4 class="font-semibold text-sm hover:text-brand cursor-pointer">Annual Alumni Global Meetup Scheduled for Winter 2026</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Registration opens next week for both in-person and virtual attendees across 5 global hubs.</p>
+            </div>
+            <div class="pt-3">
+              <span class="text-xs text-brand font-medium">Oct 15, 2026</span>
+              <h4 class="font-semibold text-sm hover:text-brand cursor-pointer">New Student Mentorship Initiative Launched</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Alumni can now offer 1-on-1 career guidance sessions directly through the portal.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alumni Success Stories -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-4 flex flex-col justify-between">
+          <div class="flex items-center space-x-2 text-brand">
+            <i class="fa-solid fa-trophy text-lg"></i>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white">Success Stories</h3>
+          </div>
+          <div class="bg-brand-light/50 dark:bg-slate-700/50 p-5 rounded-xl border border-sky-100 dark:border-slate-600 space-y-3 my-auto">
+            <p class="text-xs italic text-slate-600 dark:text-slate-300 leading-relaxed">"Connecting with senior alumni through this directory helped me secure my dream role at Data Alcott Systems right after graduation!"</p>
+            <div class="flex items-center space-x-3 pt-2">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-9 h-9 rounded-full object-cover shadow-sm">
+              <div>
+                <div class="text-xs font-bold text-slate-800 dark:text-white">Sophia Martinez</div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">Class of 2021 • Software Architect</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. ALUMNI DIRECTORY MODULE -->
+    <section id="tab-directory" class="tab-content space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold">Alumni Directory</h2>
+          <p class="text-slate-500 dark:text-slate-400 text-sm">Find, search, and connect with graduates across batches and industries.</p>
+        </div>
+      </div>
+
+      <!-- Filters & Search Bar -->
+      <div class="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Search Keywords</label>
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
+            <input type="text" id="dir-search" oninput="renderDirectory()" placeholder="Name, role, company..." class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Graduation Batch</label>
+          <select id="dir-filter-batch" onchange="renderDirectory()" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand">
+            <option value="">All Batches</option>
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Branch / Degree</label>
+          <select id="dir-filter-branch" onchange="renderDirectory()" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand">
+            <option value="">All Branches</option>
+            <option value="Computer Science">Computer Science</option>
+            <option value="Information Technology">Information Technology</option>
+            <option value="Data Science">Data Science</option>
+            <option value="Electronics">Electronics</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Location</label>
+          <select id="dir-filter-location" onchange="renderDirectory()" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand">
+            <option value="">All Locations</option>
+            <option value="Chennai">Chennai</option>
+            <option value="Mumbai">Mumbai</option>
+            <option value="Bengaluru">Bengaluru</option>
+            <option value="San Francisco">San Francisco</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Directory Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="directory-grid">
+        <!-- Alumni Cards populated dynamically -->
+      </div>
+    </section>
+
+    <!-- 3. EVENTS MANAGEMENT MODULE -->
+    <section id="tab-events" class="tab-content space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold">Alumni Events</h2>
+          <p class="text-slate-500 dark:text-slate-400 text-sm">Participate in reunions, webinars, and networking meetups.</p>
+        </div>
+        <button onclick="openModal('create-event-modal')" class="px-4 py-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl font-medium text-sm transition-all shadow-md flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-plus"></i>
+          <span>Create New Event</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" id="events-grid">
+        <!-- Event Cards populated dynamically -->
+      </div>
+    </section>
+
+    <!-- 4. JOB BOARD MODULE -->
+    <section id="tab-jobs" class="tab-content space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold">Job & Internship Board</h2>
+          <p class="text-slate-500 dark:text-slate-400 text-sm">Exclusive opportunities shared by alumni and partner companies.</p>
+        </div>
+        <button onclick="openModal('create-job-modal')" class="px-4 py-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl font-medium text-sm transition-all shadow-md flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-plus"></i>
+          <span>Post a Job Opportunity</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="jobs-grid">
+        <!-- Job Cards populated dynamically -->
+      </div>
+    </section>
+
+    <!-- 5. MENTORSHIP MODULE -->
+    <section id="tab-mentorship" class="tab-content space-y-6">
+      <div>
+        <h2 class="text-2xl font-bold">Mentorship Program</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">Connect 1-on-1 with experienced mentors for career guidance and mock interviews.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="mentors-grid">
+        <!-- Mentor Cards populated dynamically -->
+      </div>
+    </section>
+
+    <!-- 6. FUNDRAISING CAMPAIGNS MODULE -->
+    <section id="tab-fundraising" class="tab-content space-y-6">
+      <div>
+        <h2 class="text-2xl font-bold">Fundraising Campaigns</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">Support campus initiatives, student scholarships, and research grants.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="fundraising-grid">
+        <!-- Campaign Cards populated dynamically -->
+      </div>
+    </section>
+
+    <!-- 7. ALUMNI PROFILE MODULE -->
+    <section id="tab-profile" class="tab-content space-y-6">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+        <!-- Banner Header -->
+        <div class="h-32 sm:h-48 bg-gradient-to-r from-sky-500 to-brand-deep relative">
+          <button onclick="openModal('edit-profile-modal')" class="absolute top-4 right-4 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-800 dark:text-white hover:bg-white shadow-sm transition-all">
+            <i class="fa-solid fa-pen mr-1"></i> Edit Profile
+          </button>
+        </div>
+
+        <!-- Profile Content Header -->
+        <div class="px-6 sm:px-8 pb-8 relative">
+          <div class="flex flex-col sm:flex-row items-start sm:items-end -mt-16 sm:-mt-20 mb-6 space-y-4 sm:space-y-0 sm:space-x-6">
+            <img id="prof-photo" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80" alt="Profile Photo" class="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl border-4 border-white dark:border-slate-800 shadow-lg object-cover bg-white">
+            <div class="flex-grow">
+              <h1 id="prof-name" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">John Doe</h1>
+              <p id="prof-headline" class="text-brand font-medium text-sm sm:text-base">Software Engineer @ TechCorp</p>
+              <div class="flex flex-wrap items-center gap-4 mt-2 text-xs text-slate-500 dark:text-slate-400">
+                <span><i class="fa-solid fa-graduation-cap text-brand mr-1"></i> Class of <span id="prof-batch">2018</span></span>
+                <span><i class="fa-solid fa-location-dot text-brand mr-1"></i> <span id="prof-location">Chennai, India</span></span>
+                <span><i class="fa-solid fa-envelope text-brand mr-1"></i> <span id="prof-email">john@alumni.edu</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bio & Details Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4 border-t border-slate-100 dark:border-slate-700">
+            <div class="lg:col-span-2 space-y-6">
+              <div>
+                <h3 class="font-bold text-lg mb-2">About Bio</h3>
+                <p id="prof-bio" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  Passionate software engineer building scalable cloud systems. Enthusiastic about mentoring upcoming tech talent and participating in open-source projects.
+                </p>
+              </div>
+
+              <div>
+                <h3 class="font-bold text-lg mb-2">Work Experience</h3>
+                <div class="space-y-3" id="prof-experience-list">
+                  <div class="flex items-start space-x-3 text-sm">
+                    <div class="w-8 h-8 rounded-lg bg-sky-100 dark:bg-slate-700 flex items-center justify-center text-brand shrink-0 mt-0.5"><i class="fa-solid fa-briefcase"></i></div>
+                    <div>
+                      <div class="font-semibold text-slate-800 dark:text-white">Senior Software Engineer</div>
+                      <div class="text-xs text-slate-500 dark:text-slate-400">TechCorp Inc. • 2021 - Present</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Social Links & Quick Contact -->
+            <div class="bg-slate-50 dark:bg-slate-700/40 p-5 rounded-2xl space-y-4">
+              <h3 class="font-bold text-base">Social Profiles</h3>
+              <div class="space-y-3 text-sm">
+                <a id="prof-linkedin" href="#" target="_blank" class="flex items-center text-slate-600 dark:text-slate-300 hover:text-brand space-x-2">
+                  <i class="fa-brands fa-linkedin text-blue-600 text-lg w-5"></i>
+                  <span>LinkedIn Profile</span>
+                </a>
+                <a id="prof-twitter" href="#" target="_blank" class="flex items-center text-slate-600 dark:text-slate-300 hover:text-brand space-x-2">
+                  <i class="fa-brands fa-twitter text-sky-400 text-lg w-5"></i>
+                  <span>Twitter / X Handle</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. ADMIN DASHBOARD MODULE -->
+    <section id="tab-admin" class="tab-content space-y-8">
+      <div>
+        <h2 class="text-2xl font-bold">Admin Management Dashboard</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">Monitor platform metrics and moderate system data.</p>
+      </div>
+
+      <!-- Management Overview Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-slate-400 uppercase">Total Alumni</div>
+            <div class="text-2xl font-extrabold mt-1" id="admin-count-alumni">0</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-sky-100 dark:bg-slate-700 flex items-center justify-center text-brand text-xl"><i class="fa-solid fa-users"></i></div>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-slate-400 uppercase">Active Events</div>
+            <div class="text-2xl font-extrabold mt-1" id="admin-count-events">0</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-slate-700 flex items-center justify-center text-emerald-500 text-xl"><i class="fa-solid fa-calendar-check"></i></div>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-slate-400 uppercase">Open Jobs</div>
+            <div class="text-2xl font-extrabold mt-1" id="admin-count-jobs">0</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-slate-700 flex items-center justify-center text-indigo-500 text-xl"><i class="fa-solid fa-briefcase"></i></div>
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-slate-400 uppercase">Funds Raised</div>
+            <div class="text-2xl font-extrabold mt-1 text-emerald-600 dark:text-emerald-400" id="admin-count-funds">₹0</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-slate-700 flex items-center justify-center text-amber-500 text-xl"><i class="fa-solid fa-sack-dollar"></i></div>
+        </div>
+      </div>
+
+      <!-- Management Data Tables -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6 space-y-4">
+        <h3 class="font-bold text-lg">Alumni Records Directory</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-xs uppercase">
+              <tr>
+                <th class="p-3">Name</th>
+                <th class="p-3">Batch</th>
+                <th class="p-3">Branch</th>
+                <th class="p-3">Profession</th>
+                <th class="p-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-alumni-table" class="divide-y divide-slate-100 dark:divide-slate-700">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. LOGIN / REGISTER MODULE -->
+    <section id="tab-login" class="tab-content">
+      <div class="max-w-md mx-auto bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-xl border border-slate-100 dark:border-slate-700 space-y-6">
+        <!-- Auth Header Switcher -->
+        <div class="flex border-b border-slate-200 dark:border-slate-700">
+          <button id="auth-tab-login" onclick="toggleAuthMode('login')" class="flex-1 pb-3 text-center font-bold text-brand border-b-2 border-brand">Login</button>
+          <button id="auth-tab-register" onclick="toggleAuthMode('register')" class="flex-1 pb-3 text-center font-bold text-slate-400 hover:text-slate-600">Register</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Email Address</label>
+            <input type="email" required value="john@alumni.edu" class="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Password</label>
+            <input type="password" required value="password123" class="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand">
+          </div>
+          <button type="submit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow-md transition-all">Sign In</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Full Name</label>
+            <input type="text" id="reg-name" required placeholder="Alex Johnson" class="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Email</label>
+            <input type="email" id="reg-email" required placeholder="alex@alumni.edu" class="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Graduation Batch</label>
+              <input type="text" id="reg-batch" required placeholder="2022" class="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Branch</label>
+              <input type="text" id="reg-branch" required placeholder="Computer Science" class="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand">
+            </div>
+          </div>
+          <button type="submit" class="w-full py-3 bg-brand hover:bg-brand-dark text-white font-bold rounded-xl shadow-md transition-all">Create Account</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Create Event Modal -->
+  <div id="create-event-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-lg">Create New Event</h3>
+        <button onclick="closeModal('create-event-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+      <form onsubmit="handleCreateEvent(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Event Title</label>
+          <input type="text" id="event-title" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Date</label>
+          <input type="date" id="event-date" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Location / Platform</label>
+          <input type="text" id="event-location" required placeholder="Main Auditorium or Zoom" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Description</label>
+          <textarea id="event-desc" rows="3" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl"></textarea>
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-brand text-white font-bold rounded-xl hover:bg-brand-dark">Publish Event</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Job Modal -->
+  <div id="create-job-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-lg">Post Job Opportunity</h3>
+        <button onclick="closeModal('create-job-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+      <form onsubmit="handleCreateJob(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Job Title</label>
+          <input type="text" id="job-title" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Company</label>
+          <input type="text" id="job-company" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Location</label>
+          <input type="text" id="job-location" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Description</label>
+          <textarea id="job-desc" rows="3" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl"></textarea>
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-brand text-white font-bold rounded-xl hover:bg-brand-dark">Post Opportunity</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Donation Modal -->
+  <div id="donate-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-lg">Support Campaign</h3>
+        <button onclick="closeModal('donate-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+      <form onsubmit="handleDonate(event)" class="space-y-4">
+        <input type="hidden" id="donate-campaign-id">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Contribution Amount (₹)</label>
+          <input type="number" id="donate-amount" min="100" value="1000" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700">Confirm Donation</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mentorship Session Modal -->
+  <div id="mentor-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-lg">Request Mentorship Session</h3>
+        <button onclick="closeModal('mentor-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+      <form onsubmit="handleRequestMentor(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Topic / Goals</label>
+          <textarea rows="3" required placeholder="E.g., Resume review, system design interview prep..." class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl"></textarea>
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-brand text-white font-bold rounded-xl hover:bg-brand-dark">Send Request</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div id="edit-profile-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-slate-100 dark:border-slate-700">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-lg">Edit Profile Details</h3>
+        <button onclick="closeModal('edit-profile-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+      <form onsubmit="handleSaveProfile(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Full Name</label>
+          <input type="text" id="edit-prof-name" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Headline / Profession</label>
+          <input type="text" id="edit-prof-headline" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Bio</label>
+          <textarea id="edit-prof-bio" rows="3" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl"></textarea>
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-brand text-white font-bold rounded-xl hover:bg-brand-dark">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 mt-auto py-6">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400">
+      <p>© 2026 AlumniNetwork. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ================= JAVASCRIPT APP LOGIC ================= -->
+  <script>
+    // Initial State Data (Stored in LocalStorage or standard array)
+    const initialAlumni = [
+      {
+        id: 1,
+        name: "John Doe",
+        email: "john@alumni.edu",
+        batch: "2018",
+        branch: "Computer Science",
+        location: "Chennai",
+        profession: "Software Engineer",
+        bio: "Passionate about building cloud products & mentoring junior engineers.",
+        photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+        social: { linkedin: "#", twitter: "#" }
+      },
+      {
+        id: 2,
+        name: "Jane Smith",
+        email: "jane@alumni.edu",
+        batch: "2019",
+        branch: "Data Science",
+        location: "Mumbai",
+        profession: "Data Scientist",
+        bio: "Data enthusiast with a background in machine learning models.",
+        photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80",
+        social: { linkedin: "#", twitter: "#" }
+      },
+      {
+        id: 3,
+        name: "Robert Chen",
+        email: "robert@alumni.edu",
+        batch: "2020",
+        branch: "Information Technology",
+        location: "Bengaluru",
+        profession: "Product Manager",
+        bio: "Leading product roadmaps for enterprise SaaS solutions.",
+        photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80",
+        social: { linkedin: "#", twitter: "#" }
+      }
+    ];
+
+    const initialEvents = [
+      {
+        id: 1,
+        title: "Annual Alumni Meet 2026",
+        description: "Join us for the annual gathering with interactive networking sessions.",
+        date: "2026-12-20",
+        location: "Chennai Main Campus",
+        attendees: 120
+      },
+      {
+        id: 2,
+        title: "Tech Leadership Webinar",
+        description: "Insightful talk on modern AI systems architecture.",
+        date: "2026-11-15",
+        location: "Online (Zoom)",
+        attendees: 85
+      }
+    ];
+
+    const initialJobs = [
+      {
+        id: 1,
+        title: "Frontend Developer",
+        company: "Data Alcott Systems",
+        location: "Remote / Bengaluru",
+        type: "Full-Time",
+        description: "Seeking a JavaScript specialist for modern UI platforms."
+      },
+      {
+        id: 2,
+        title: "Data Analyst Intern",
+        company: "Analytics Hub",
+        location: "Mumbai",
+        type: "Internship",
+        description: "Work with big data analytics and automated dashboards."
+      }
+    ];
+
+    const initialMentors = [
+      { id: 1, name: "Jane Smith", expertise: "Data Science & Machine Learning", availability: "Available Weekends" },
+      { id: 2, name: "Robert Chen", expertise: "Product Management & Career Growth", availability: "Available Evenings" }
+    ];
+
+    const initialFundraising = [
+      { id: 1, campaign_name: "Library Digital Expansion Project", target: 100000, raised: 65000, description: "Upgrading student lab hardware and online research subscriptions." },
+      { id: 2, campaign_name: "Alumni Need-Based Scholarship Fund", target: 200000, raised: 145000, description: "Sponsoring tuition for underprivileged high-achieving students." }
+    ];
+
+    // Data Loaders
+    let alumniData = JSON.parse(localStorage.getItem('alumni_list')) || initialAlumni;
+    let eventsData = JSON.parse(localStorage.getItem('events_list')) || initialEvents;
+    let jobsData = JSON.parse(localStorage.getItem('jobs_list')) || initialJobs;
+    let mentorsData = JSON.parse(localStorage.getItem('mentors_list')) || initialMentors;
+    let fundraisingData = JSON.parse(localStorage.getItem('fundraising_list')) || initialFundraising;
+    let currentProfile = JSON.parse(localStorage.getItem('user_profile')) || alumniData[0];
+
+    // Save helpers
+    function saveData() {
+      localStorage.setItem('alumni_list', JSON.stringify(alumniData));
+      localStorage.setItem('events_list', JSON.stringify(eventsData));
+      localStorage.setItem('jobs_list', JSON.stringify(jobsData));
+      localStorage.setItem('mentors_list', JSON.stringify(mentorsData));
+      localStorage.setItem('fundraising_list', JSON.stringify(fundraisingData));
+      localStorage.setItem('user_profile', JSON.stringify(currentProfile));
+      updateStats();
+    }
+
+    // Tab Navigation Logic
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      const activeTab = document.getElementById(`tab-${tabId}`);
+      if (activeTab) activeTab.classList.add('active');
+
+      // Update Nav active styling
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-brand', 'bg-brand-light', 'dark:bg-slate-700');
+        btn.classList.add('text-slate-600', 'dark:text-slate-300');
+      });
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      if (activeNav) {
+        activeNav.classList.add('text-brand', 'bg-brand-light', 'dark:bg-slate-700');
+        activeNav.classList.remove('text-slate-600', 'dark:text-slate-300');
+      }
+
+      // Hide mobile menu
+      document.getElementById('mobile-menu').classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Toast Notification helper
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    // Modal Helpers
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    // Render Home Section Dynamic Content
+    function renderHome() {
+      const featuredContainer = document.getElementById('home-featured-alumni');
+      featuredContainer.innerHTML = alumniData.slice(0, 3).map(person => `
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center space-y-3">
+          <img src="${person.photo}" alt="${person.name}" class="w-20 h-20 rounded-full object-cover shadow-md">
+          <div>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">${person.name}</h3>
+            <p class="text-xs text-brand font-medium">${person.profession}</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Class of ${person.batch} • ${person.location}</p>
+          </div>
+          <button onclick="switchTab('directory')" class="w-full py-1.5 text-xs bg-slate-50 dark:bg-slate-700 hover:bg-sky-50 font-medium rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand transition-colors">
+            View Profile
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // Render Directory Cards
+    function renderDirectory() {
+      const query = document.getElementById('dir-search').value.toLowerCase();
+      const batch = document.getElementById('dir-filter-batch').value;
+      const branch = document.getElementById('dir-filter-branch').value;
+      const location = document.getElementById('dir-filter-location').value;
+
+      const filtered = alumniData.filter(a => {
+        const matchesQuery = a.name.toLowerCase().includes(query) || a.profession.toLowerCase().includes(query);
+        const matchesBatch = !batch || a.batch === batch;
+        const matchesBranch = !branch || a.branch === branch;
+        const matchesLocation = !location || a.location === location;
+        return matchesQuery && matchesBatch && matchesBranch && matchesLocation;
+      });
+
+      const grid = document.getElementById('directory-grid');
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">No alumni records match your query.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(a => `
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 space-y-4 hover:shadow-md transition-shadow">
+          <div class="flex items-center space-x-4">
+            <img src="${a.photo}" class="w-14 h-14 rounded-full object-cover shadow">
+            <div>
+              <h3 class="font-bold text-base">${a.name}</h3>
+              <div class="text-xs text-brand font-medium">${a.profession}</div>
+              <div class="text-xs text-slate-400">${a.branch} ('${a.batch.slice(2)})</div>
+            </div>
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${a.bio}</p>
+          <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700 text-xs">
+            <span class="text-slate-400"><i class="fa-solid fa-location-dot text-brand mr-1"></i>${a.location}</span>
+            <div class="flex space-x-2 text-slate-400">
+              <a href="${a.social.linkedin}" class="hover:text-brand"><i class="fa-brands fa-linkedin text-base"></i></a>
+              <a href="${a.social.twitter}" class="hover:text-brand"><i class="fa-brands fa-twitter text-base"></i></a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render Events Section
+    function renderEvents() {
+      const grid = document.getElementById('events-grid');
+      grid.innerHTML = eventsData.map(e => `
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 space-y-4 flex flex-col justify-between">
+          <div class="space-y-2">
+            <span class="px-2.5 py-1 bg-brand-light dark:bg-slate-700 text-brand text-xs font-semibold rounded-lg"><i class="fa-regular fa-calendar mr-1"></i>${e.date}</span>
+            <h3 class="font-bold text-lg text-slate-900 dark:text-white">${e.title}</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400"><i class="fa-solid fa-location-dot mr-1"></i>${e.location}</p>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${e.description}</p>
+          </div>
+          <div class="pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+            <span class="text-xs text-slate-500 dark:text-slate-400"><i class="fa-solid fa-user-group text-brand mr-1"></i>${e.attendees} Attending</span>
+            <button onclick="rsvpEvent(${e.id})" class="px-4 py-2 bg-brand hover:bg-brand-dark text-white rounded-xl text-xs font-semibold shadow transition-all">RSVP Now</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function rsvpEvent(id) {
+      const event = eventsData.find(e => e.id === id);
+      if (event) {
+        event.attendees += 1;
+        saveData();
+        renderEvents();
+        showToast(`You have RSVP'd for "${event.title}"!`);
+      }
+    }
+
+    // Render Jobs Section
+    function renderJobs() {
+      const grid = document.getElementById('jobs-grid');
+      grid.innerHTML = jobsData.map(j => `
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 space-y-4 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <h3 class="font-bold text-lg">${j.title}</h3>
+                <div class="text-xs text-brand font-medium">${j.company}</div>
+              </div>
+              <span class="px-2.5 py-1 bg-emerald-100 dark:bg-slate-700 text-emerald-600 text-xs font-semibold rounded-lg">${j.type || 'Full-Time'}</span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400"><i class="fa-solid fa-location-dot mr-1"></i>${j.location}</p>
+            <p class="text-xs text-slate-600 dark:text-slate-300">${j.description}</p>
+          </div>
+          <button onclick="showToast('Application sent successfully to ${j.company}!')" class="w-full py-2 bg-brand hover:bg-brand-dark text-white rounded-xl text-xs font-semibold shadow transition-all">Quick Apply</button>
+        </div>
+      `).join('');
+    }
+
+    // Render Mentors Section
+    function renderMentors() {
+      const grid = document.getElementById('mentors-grid');
+      grid.innerHTML = mentorsData.map(m => `
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 space-y-4 flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="w-12 h-12 rounded-full bg-brand-light dark:bg-slate-700 text-brand flex items-center justify-center font-bold text-lg">
+              <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-base">${m.name}</h3>
+              <p class="text-xs text-brand font-medium">${m.expertise}</p>
+              <p class="text-xs text-slate-400 mt-1"><i class="fa-regular fa-clock mr-1"></i>${m.availability}</p>
+            </div>
+          </div>
+          <button onclick="openModal('mentor-modal')" class="w-full py-2 bg-brand hover:bg-brand-dark text-white rounded-xl text-xs font-semibold shadow transition-all">Request Session</button>
+        </div>
+      `).join('');
+    }
+
+    // Render Fundraising Section
+    function renderFundraising() {
+      const grid = document.getElementById('fundraising-grid');
+      grid.innerHTML = fundraisingData.map(f => {
+        const percent = Math.min(100, Math.round((f.raised / f.target) * 100));
+        return `
+          <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 space-y-4">
+            <div class="space-y-2">
+              <h3 class="font-bold text-lg">${f.campaign_name}</h3>
+              <p class="text-xs text-slate-600 dark:text-slate-300">${f.description}</p>
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-semibold">
+                <span>Raised: ₹${f.raised.toLocaleString('en-IN')}</span>
+                <span class="text-brand">Target: ₹${f.target.toLocaleString('en-IN')} (${percent}%)</span>
+              </div>
+              <div class="w-full h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-sky-400 to-brand rounded-full" style="width: ${percent}%"></div>
+              </div>
+            </div>
+
+            <button onclick="openDonateModal(${f.id})" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition-all">Donate Now</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openDonateModal(campaignId) {
+      document.getElementById('donate-campaign-id').value = campaignId;
+      openModal('donate-modal');
+    }
+
+    function handleDonate(e) {
+      e.preventDefault();
+      const id = parseInt(document.getElementById('donate-campaign-id').value);
+      const amount = parseInt(document.getElementById('donate-amount').value);
+      const campaign = fundraisingData.find(f => f.id === id);
+
+      if (campaign && amount > 0) {
+        campaign.raised += amount;
+        saveData();
+        renderFundraising();
+        renderAdmin();
+        closeModal('donate-modal');
+        showToast(`Thank you! Your donation of ₹${amount.toLocaleString('en-IN')} was received.`);
+      }
+    }
+
+    // Render Profile Data
+    function renderProfile() {
+      document.getElementById('prof-name').innerText = currentProfile.name;
+      document.getElementById('prof-headline').innerText = currentProfile.profession;
+      document.getElementById('prof-batch').innerText = currentProfile.batch;
+      document.getElementById('prof-location').innerText = currentProfile.location;
+      document.getElementById('prof-email').innerText = currentProfile.email;
+      document.getElementById('prof-bio').innerText = currentProfile.bio;
+      document.getElementById('prof-photo').src = currentProfile.photo;
+    }
+
+    // Render Admin Table and Stats
+    function renderAdmin() {
+      document.getElementById('admin-count-alumni').innerText = alumniData.length;
+      document.getElementById('admin-count-events').innerText = eventsData.length;
+      document.getElementById('admin-count-jobs').innerText = jobsData.length;
+
+      const totalRaised = fundraisingData.reduce((acc, curr) => acc + curr.raised, 0);
+      document.getElementById('admin-count-funds').innerText = `₹${totalRaised.toLocaleString('en-IN')}`;
+
+      const tbody = document.getElementById('admin-alumni-table');
+      tbody.innerHTML = alumniData.map(a => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+          <td class="p-3 font-medium">${a.name}</td>
+          <td class="p-3 text-slate-500 dark:text-slate-400">${a.batch}</td>
+          <td class="p-3 text-slate-500 dark:text-slate-400">${a.branch}</td>
+          <td class="p-3 text-slate-500 dark:text-slate-400">${a.profession}</td>
+          <td class="p-3">
+            <button onclick="deleteAlumni(${a.id})" class="text-rose-500 hover:text-rose-700 font-medium text-xs">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function deleteAlumni(id) {
+      alumniData = alumniData.filter(a => a.id !== id);
+      saveData();
+      renderDirectory();
+      renderHome();
+      renderAdmin();
+      showToast('Alumni record deleted.');
+    }
+
+    // Update Overall Stats counters
+    function updateStats() {
+      document.getElementById('stat-alumni-count').innerText = `${alumniData.length + 1200}+`;
+      document.getElementById('stat-events-count').innerText = eventsData.length + 45;
+      document.getElementById('stat-jobs-count').innerText = jobsData.length + 115;
+
+      const totalRaised = fundraisingData.reduce((acc, curr) => acc + curr.raised, 0);
+      document.getElementById('stat-raised-count').innerText = `₹${totalRaised.toLocaleString('en-IN')}`;
+    }
+
+    // Handlers for Form Submissions
+    function handleCreateEvent(e) {
+      e.preventDefault();
+      const newEv = {
+        id: Date.now(),
+        title: document.getElementById('event-title').value,
+        date: document.getElementById('event-date').value,
+        location: document.getElementById('event-location').value,
+        description: document.getElementById('event-desc').value,
+        attendees: 1
+      };
+      eventsData.unshift(newEv);
+      saveData();
+      renderEvents();
+      renderAdmin();
+      closeModal('create-event-modal');
+      e.target.reset();
+      showToast('New event created successfully!');
+    }
+
+    function handleCreateJob(e) {
+      e.preventDefault();
+      const newJob = {
+        id: Date.now(),
+        title: document.getElementById('job-title').value,
+        company: document.getElementById('job-company').value,
+        location: document.getElementById('job-location').value,
+        type: "Full-Time",
+        description: document.getElementById('job-desc').value
+      };
+      jobsData.unshift(newJob);
+      saveData();
+      renderJobs();
+      renderAdmin();
+      closeModal('create-job-modal');
+      e.target.reset();
+      showToast('Job opportunity published!');
+    }
+
+    function handleRequestMentor(e) {
+      e.preventDefault();
+      closeModal('mentor-modal');
+      showToast('Mentorship session request submitted!');
+      e.target.reset();
+    }
+
+    function handleSaveProfile(e) {
+      e.preventDefault();
+      currentProfile.name = document.getElementById('edit-prof-name').value;
+      currentProfile.profession = document.getElementById('edit-prof-headline').value;
+      currentProfile.bio = document.getElementById('edit-prof-bio').value;
+      saveData();
+      renderProfile();
+      closeModal('edit-profile-modal');
+      showToast('Profile updated!');
+    }
+
+    function toggleAuthMode(mode) {
+      if (mode === 'login') {
+        document.getElementById('form-login').classList.remove('hidden');
+        document.getElementById('form-register').classList.add('hidden');
+        document.getElementById('auth-tab-login').classList.add('text-brand', 'border-b-2', 'border-brand');
+        document.getElementById('auth-tab-register').classList.remove('text-brand', 'border-b-2', 'border-brand');
+      } else {
+        document.getElementById('form-login').classList.add('hidden');
+        document.getElementById('form-register').classList.remove('hidden');
+        document.getElementById('auth-tab-register').classList.add('text-brand', 'border-b-2', 'border-brand');
+        document.getElementById('auth-tab-login').classList.remove('text-brand', 'border-b-2', 'border-brand');
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      showToast('Welcome back, John!');
+      switchTab('profile');
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const newPerson = {
+        id: Date.now(),
+        name: document.getElementById('reg-name').value,
+        email: document.getElementById('reg-email').value,
+        batch: document.getElementById('reg-batch').value,
+        branch: document.getElementById('reg-branch').value,
+        location: "Bengaluru",
+        profession: "Alumni Member",
+        bio: "Newly registered alumni member of the platform.",
+        photo: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=300&auto=format&fit=crop&q=80",
+        social: { linkedin: "#", twitter: "#" }
+      };
+      alumniData.push(newPerson);
+      currentProfile = newPerson;
+      saveData();
+      renderDirectory();
+      renderHome();
+      renderAdmin();
+      renderProfile();
+      showToast('Registration successful!');
+      switchTab('profile');
+    }
+
+    // Dark Mode Switcher
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    themeToggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      if (document.documentElement.classList.contains('dark')) {
+        themeIcon.className = 'fa-solid fa-sun text-amber-400 text-lg';
+      } else {
+        themeIcon.className = 'fa-solid fa-moon text-lg';
+      }
+    });
+
+    // Mobile Navigation Toggle
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+
+    // Populate Edit Modal default values
+    document.getElementById('edit-prof-name').value = currentProfile.name;
+    document.getElementById('edit-prof-headline').value = currentProfile.profession;
+    document.getElementById('edit-prof-bio').value = currentProfile.bio;
+
+    // Initialization on window load
+    window.onload = function () {
+      renderHome();
+      renderDirectory();
+      renderEvents();
+      renderJobs();
+      renderMentors();
+      renderFundraising();
+      renderProfile();
+      renderAdmin();
+      updateStats();
+    };
+  </script>
+</body>
+</html>
